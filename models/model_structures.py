@@ -169,3 +169,35 @@ class M6(torch.nn.Module):
         out = self.Square2(out)
         out = self.FC2(out)
         return out
+
+class M7(torch.nn.Module):
+    def __init__(self):
+        super(M7, self).__init__()
+        self.conv1 = torch.nn.Conv2d(3, 32, kernel_size=3, padding=1)
+        self.conv2 = torch.nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.conv3 = torch.nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.pool = torch.nn.AvgPool2d(2, 2)  # Changed to AvgPool2d
+        self.fc1 = torch.nn.Linear(128 * 28 * 28, 1024)
+        self.fc2 = torch.nn.Linear(1024, 1024)
+        self.fc3 = torch.nn.Linear(1024, 2)  # Output has 2 classes
+​
+    def forward(self, x):
+        x = self.conv1(x)
+        x = _approximated_ReLU(x)
+        x = self.pool(x)
+        
+        x = self.conv2(x)
+        x = _approximated_ReLU(x)
+        x = self.pool(x)
+        
+        x = self.conv3(x)
+        x = _approximated_ReLU(x)
+        x = self.pool(x)
+        
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = _approximated_ReLU(x)
+        x = self.fc2(x)
+        x = _approximated_ReLU(x)
+        x = self.fc3(x)
+        return x
